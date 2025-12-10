@@ -1,0 +1,48 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="card">
+    <h2>Enter Patient Details</h2>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="error">{{ field.errors|striptags }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn-primary">Predict</button>
+    </form>
+
+    {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% if result is not None %}
+        <div class="alert {% if result == 1 %}alert-danger{% else %}alert-success{% endif %}">
+            {% if result == 1 %}
+                <strong>High Risk:</strong> The model predicts that the patient is likely to have diabetes.
+            {% else %}
+                <strong>Low Risk:</strong> The model predicts that the patient is unlikely to have diabetes.
+            {% endif %}
+            {% if probability %}
+                <div>Model confidence: {{ probability }}</div>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+
+<section class="card">
+    <h2>About the Project</h2>
+    <p>
+        This application uses multiple machine learning algorithms such as KNN, Naïve Bayes,
+        Decision Tree, Random Forest, and SVM to predict the likelihood of diabetes based on
+        medical parameters. The best-performing model is selected using accuracy and
+        cross-validation.
+    </p>
+</section>
+{% endblock %}
